@@ -4,7 +4,10 @@
 #include <string>
 #include <vector>
 
-std::string sha256(const std::string& input);
-std::string sha26(const std::string& input, const std::vector<unsigned char>& pkey);
+std::string hex(const std::vector<unsigned char>& digest);
+
+std::vector<unsigned char> sha256(const std::string& input);
+
+std::vector<unsigned char> sha512(const std::string& input, const std::vector<unsigned char>& pkey);
 
 #endif

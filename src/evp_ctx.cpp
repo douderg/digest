@@ -8,7 +8,7 @@ evp_ctx::evp_ctx():ctx_(EVP_MD_CTX_new(), deleter()) {
     }
 }
 
-std::string evp_ctx::digest(const EVP_MD* type, const std::string& input) {
+std::vector<unsigned char> evp_ctx::digest(const EVP_MD* type, const std::string& input) {
     if (!EVP_DigestInit_ex(ctx_.get(), type, NULL)) {
         throw std::runtime_error("failed to setup digest type");
     }
@@ -20,17 +20,11 @@ std::string evp_ctx::digest(const EVP_MD* type, const std::string& input) {
     if (!EVP_DigestFinal_ex(ctx_.get(), md, &len)) {
         throw std::runtime_error("failed to compute digest");
     }
-    std::string result;
-    char buffer[3];
-    for (unsigned int i = 0; i < len; ++i) {
-        sprintf(buffer, "%02hx", md[i]);
-        result.append(buffer);
-    }
-    return result;
+    return std::vector<unsigned char>(md, md + len);
 }
 
 
-std::string evp_ctx::sign(const EVP_MD* type, const std::string& input, const std::vector<unsigned char>& pkey) {
+std::vector<unsigned char> evp_ctx::sign(const EVP_MD* type, const std::string& input, const std::vector<unsigned char>& pkey) {
     std::unique_ptr<EVP_PKEY, key_deleter> key(EVP_PKEY_new_mac_key(EVP_PKEY_HMAC, NULL, pkey.data(), pkey.size()));
     if (!EVP_DigestSignInit(ctx_.get(), NULL, type, NULL, key.get())) {
         throw std::runtime_error("failed to setup digest type");
@@ -43,13 +37,7 @@ std::string evp_ctx::sign(const EVP_MD* type, const std::string& input, const st
     if (!EVP_DigestSignFinal(ctx_.get(), md, &len)) {
         throw std::runtime_error("failed to compute digest");
     }
-    std::string result;
-    char buffer[3];
-    for (size_t i = 0; i < len; ++i) {
-        sprintf(buffer, "%02hx", md[i]);
-        result.append(buffer);
-    }
-    return result;
+    return std::vector<unsigned char>(md, md + len);
 }
 
 

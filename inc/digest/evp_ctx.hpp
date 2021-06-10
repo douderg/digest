@@ -18,9 +18,9 @@ public:
     evp_ctx();
     ~evp_ctx() = default;
 
-    std::string digest(const EVP_MD* type, const std::string& input);
+    std::vector<unsigned char> digest(const EVP_MD* type, const std::string& input);
 
-    std::string sign(const EVP_MD* type, const std::string& input, const std::vector<unsigned char>& pkey);
+    std::vector<unsigned char> sign(const EVP_MD* type, const std::string& input, const std::vector<unsigned char>& pkey);
 
 private:
     std::unique_ptr<EVP_MD_CTX, deleter> ctx_;
