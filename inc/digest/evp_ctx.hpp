@@ -4,6 +4,7 @@
 #include <openssl/evp.h>
 #include <memory>
 #include <vector>
+#include <string>
 
 class evp_ctx {
 public:
